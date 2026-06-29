@@ -1,20 +1,28 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/MelinaClouet/go-native-docker-api/services"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	println("Serveur démarré")
 	r := gin.Default()
 
-	// Route de santé
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "API is running",
-		})
+	// Route pour récupérer les informations Docker
+	r.GET("/docker-info", func(c *gin.Context) {
+		info, err := services.GetDockerInfo()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, info)
 	})
 
-	// Lancement du serveur sur le port 8080
-	r.Run(":8080")
+	r.Run(":8080") // Démarre le serveur sur le port 8080
 }
