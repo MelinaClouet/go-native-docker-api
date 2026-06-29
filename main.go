@@ -50,5 +50,34 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Projet sauvegardé avec succès"})
 	})
 
+	r.POST("/deploy", func(c *gin.Context) {
+		var project models.Project
+
+		if err := c.ShouldBindJSON(&project); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		err := services.DeployProject(project)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(200, gin.H{"message": "project deployed"})
+	})
+
+	r.GET("/status/:name", func(c *gin.Context) {
+		name := c.Param("name")
+
+		status, err := services.GetDeploymentStatus(name)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(200, gin.H{"status": status})
+	})
+
 	r.Run(":8080") // Démarre le serveur sur le port 8080
 }
