@@ -15,7 +15,7 @@ import (
 func DeployProject(project models.Project) error {
 	log.Println("Déploiement :", project.Name)
 
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := NewDockerClient(project.Engine.Host)
 	if err != nil {
 		return err
 	}

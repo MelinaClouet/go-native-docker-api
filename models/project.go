@@ -10,4 +10,5 @@ type Service struct {
 type Project struct {
 	Name     string    `json:"name"`
 	Services []Service `json:"services"`
+	Engine   Engine    `json:"engine"` // ✅ ICI
 }
