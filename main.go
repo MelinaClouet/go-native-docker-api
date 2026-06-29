@@ -25,6 +25,15 @@ func main() {
 		c.JSON(http.StatusOK, info)
 	})
 
+	r.GET("/projects", func(c *gin.Context) {
+		projects, err := services.GetProjects()
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, projects)
+	})
+
 	r.POST("/projects", func(c *gin.Context) {
 		var project models.Project
 		if err := c.ShouldBindJSON(&project); err != nil {

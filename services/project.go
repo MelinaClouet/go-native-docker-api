@@ -47,3 +47,7 @@ func loadProjects() ([]models.Project, error) {
 
 	return projects, nil
 }
+
+func GetProjects() ([]models.Project, error) {
+	return loadProjects()
+}
