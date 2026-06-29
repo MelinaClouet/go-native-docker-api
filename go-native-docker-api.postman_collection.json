@@ -1,0 +1,88 @@
+{
+  "info": {
+    "name": "Go Native Docker API",
+    "_postman_id": "b2c1f6a1-8f3a-4d2b-9c11-123456789abc",
+    "description": "Collection pour tester l'API Go Docker (Gin + Docker SDK)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Docker Info",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/docker-info"
+      }
+    },
+    {
+      "name": "Create Project",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"test-project\",\n  \"engine\": {\n    \"name\": \"local\",\n    \"host\": \"unix:///var/run/docker.sock\"\n  },\n  \"services\": [\n    {\n      \"name\": \"nginx\",\n      \"image\": \"nginx:latest\",\n      \"environment\": {\n        \"ENV\": \"dev\"\n      },\n      \"volumes\": []\n    }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/projects"
+      }
+    },
+    {
+      "name": "List Projects",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/projects"
+      }
+    },
+    {
+      "name": "Deploy Project",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"test-project\",\n  \"engine\": {\n    \"name\": \"local\",\n    \"host\": \"unix:///var/run/docker.sock\"\n  },\n  \"services\": [\n    {\n      \"name\": \"nginx\",\n      \"image\": \"nginx:latest\",\n      \"environment\": {},\n      \"volumes\": []\n    }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/deploy"
+      }
+    },
+    {
+      "name": "Deploy Project (Remote Engine)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"test-project\",\n  \"engine\": {\n    \"name\": \"remote-server\",\n    \"host\": \"tcp://192.168.1.50:2375\"\n  },\n  \"services\": [\n    {\n      \"name\": \"nginx\",\n      \"image\": \"nginx:latest\",\n      \"environment\": {},\n      \"volumes\": []\n    }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/deploy"
+      }
+    },
+    {
+      "name": "Get Container Status",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/status/nginx"
+      }
+    }
+  ]
+}
