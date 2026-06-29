@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/MelinaClouet/go-native-docker-api/models"
+	"github.com/MelinaClouet/go-native-docker-api/utils"
 	"github.com/moby/moby/api/types/container"
 	"github.com/moby/moby/client"
 )
@@ -42,7 +43,7 @@ func DeployProject(project models.Project) error {
 			client.ContainerCreateOptions{
 				Config: &container.Config{
 					Image: service.Image,
-					Env:   mapToSlice(service.Environment),
+					Env:   utils.MapToSlice(service.Environment),
 				},
 				Name: service.Name,
 			},

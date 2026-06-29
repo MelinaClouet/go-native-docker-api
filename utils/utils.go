@@ -1,8 +1,8 @@
-package services
+package utils
 
 import "fmt"
 
-func mapToSlice(env map[string]string) []string {
+func MapToSlice(env map[string]string) []string {
 	var result []string
 	for k, v := range env {
 		if k != "" && v != "" {
