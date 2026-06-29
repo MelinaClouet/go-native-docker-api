@@ -34,3 +34,26 @@ func GetDockerInfo() (*DockerInfo, error) {
 		Images:     images,
 	}, nil
 }
+
+func GetDeploymentStatus(containerName string) (string, error) {
+	cli, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		return "", err
+	}
+
+	containers, err := cli.ContainerList(context.Background(), container.ListOptions{All: true})
+	if err != nil {
+		return "", err
+	}
+
+	for _, c := range containers {
+		for _, name := range c.Names {
+			// Docker met "/" devant les noms
+			if name == "/"+containerName {
+				return c.State, nil // "running", "exited", etc.
+			}
+		}
+	}
+
+	return "not-found", nil
+}
