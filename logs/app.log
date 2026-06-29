@@ -1,0 +1,24 @@
+[GO-DOCKER-API] 2026/06/29 20:41:23 main.go:14: [SERVER] starting on :8080
+[GO-DOCKER-API] 2026/06/29 20:41:23 main.go:128: [SERVER] ready
+[GO-DOCKER-API] 2026/06/29 20:41:27 main.go:20: [HTTP] GET /docker-info
+[GO-DOCKER-API] 2026/06/29 20:41:27 main.go:33: [API] docker-info requested
+[GO-DOCKER-API] 2026/06/29 20:41:27 docker.go:16: [DOCKER_INFO] fetching docker info
+[GO-DOCKER-API] 2026/06/29 20:41:27 docker.go:24: [DOCKER_INFO] listing containers
+[GO-DOCKER-API] 2026/06/29 20:41:27 docker.go:32: [DOCKER_INFO] containers found=1
+[GO-DOCKER-API] 2026/06/29 20:41:27 docker.go:34: [DOCKER_INFO] listing images
+[GO-DOCKER-API] 2026/06/29 20:41:27 docker.go:42: [DOCKER_INFO] images found=38
+[GO-DOCKER-API] 2026/06/29 20:41:27 main.go:24: [HTTP] GET /docker-info -> 200
+[GO-DOCKER-API] 2026/06/29 20:41:29 main.go:20: [HTTP] GET /projects
+[GO-DOCKER-API] 2026/06/29 20:41:29 main.go:47: [API] get projects
+[GO-DOCKER-API] 2026/06/29 20:41:29 project.go:76: [PROJECT][GET] fetching all projects
+[GO-DOCKER-API] 2026/06/29 20:41:29 project.go:51: [PROJECT][LOAD] reading file=storage/projects.json
+[GO-DOCKER-API] 2026/06/29 20:41:29 project.go:70: [PROJECT][LOAD] success projects=11
+[GO-DOCKER-API] 2026/06/29 20:41:29 main.go:24: [HTTP] GET /projects -> 200
+[GO-DOCKER-API] 2026/06/29 20:41:32 main.go:20: [HTTP] GET /status/nginx
+[GO-DOCKER-API] 2026/06/29 20:41:32 main.go:114: [API] status request container=nginx
+[GO-DOCKER-API] 2026/06/29 20:41:32 docker.go:51: [STATUS] checking container name=nginx
+[GO-DOCKER-API] 2026/06/29 20:41:32 docker.go:59: [STATUS] listing containers (All=true)
+[GO-DOCKER-API] 2026/06/29 20:41:32 docker.go:69: [STATUS] total containers=6
+[GO-DOCKER-API] 2026/06/29 20:41:32 docker.go:75: [STATUS] found container name=nginx status=Up 2 minutes
+[GO-DOCKER-API] 2026/06/29 20:41:32 main.go:123: [API] status result name=nginx status=Up 2 minutes
+[GO-DOCKER-API] 2026/06/29 20:41:32 main.go:24: [HTTP] GET /status/nginx -> 200
