@@ -10,11 +10,21 @@ import (
 
 const projectFile = "storage/projects.json"
 
-// SaveProject sauvegarde un projet dans un fichier JSON
+// SaveProject sauvegarde un projet dans le fichier JSON local.
+//
+// Cette fonction :
+//  1. charge les projets existants
+//  2. ajoute le nouveau projet
+//  3. sauvegarde l’ensemble dans storage/projects.json
+//
+// Elle agit comme une "mini base de données locale".
 func SaveProject(project models.Project) error {
+
 	utils.Logger.Printf("[PROJECT][SAVE] loading existing projects file=%s", projectFile)
 
-	// Lire les données existantes
+	// -------------------------
+	// LOAD EXISTING DATA
+	// -------------------------
 	projects, err := loadProjects()
 	if err != nil {
 		utils.Logger.Printf("[ERROR][PROJECT][LOAD] failed err=%v", err)
@@ -23,31 +33,49 @@ func SaveProject(project models.Project) error {
 
 	utils.Logger.Printf("[PROJECT][SAVE] existing projects=%d", len(projects))
 
-	// Ajouter le nouveau projet
+	// -------------------------
+	// APPEND NEW PROJECT
+	// -------------------------
 	projects = append(projects, project)
 
-	utils.Logger.Printf("[PROJECT][SAVE] adding project name=%s total=%d", project.Name, len(projects))
+	utils.Logger.Printf("[PROJECT][SAVE] adding project name=%s total=%d",
+		project.Name, len(projects),
+	)
 
-	// Sauvegarder dans le fichier
+	// -------------------------
+	// SERIALIZE DATA
+	// -------------------------
 	data, err := json.MarshalIndent(projects, "", "  ")
 	if err != nil {
-		utils.Logger.Printf("[ERROR][PROJECT][MARSHAL] project=%s err=%v", project.Name, err)
+		utils.Logger.Printf("[ERROR][PROJECT][MARSHAL] project=%s err=%v",
+			project.Name, err,
+		)
 		return err
 	}
 
+	// -------------------------
+	// WRITE FILE
+	// -------------------------
 	err = os.WriteFile(projectFile, data, 0644)
 	if err != nil {
-		utils.Logger.Printf("[ERROR][PROJECT][WRITE] file=%s err=%v", projectFile, err)
+		utils.Logger.Printf("[ERROR][PROJECT][WRITE] file=%s err=%v",
+			projectFile, err,
+		)
 		return err
 	}
 
-	utils.Logger.Printf("[PROJECT][SAVE] success project=%s file=%s", project.Name, projectFile)
+	utils.Logger.Printf("[PROJECT][SAVE] success project=%s file=%s",
+		project.Name, projectFile,
+	)
 
 	return nil
 }
 
-// loadProjects charge les projets d'un fichier JSON
+// loadProjects charge tous les projets depuis le fichier JSON.
+//
+// Si le fichier n’existe pas, retourne une liste vide (cas normal au démarrage).
 func loadProjects() ([]models.Project, error) {
+
 	utils.Logger.Printf("[PROJECT][LOAD] reading file=%s", projectFile)
 
 	data, err := os.ReadFile(projectFile)
@@ -61,6 +89,7 @@ func loadProjects() ([]models.Project, error) {
 	}
 
 	var projects []models.Project
+
 	err = json.Unmarshal(data, &projects)
 	if err != nil {
 		utils.Logger.Printf("[ERROR][PROJECT][UNMARSHAL] err=%v", err)
@@ -72,7 +101,12 @@ func loadProjects() ([]models.Project, error) {
 	return projects, nil
 }
 
+// GetProjects retourne tous les projets enregistrés.
+//
+// Cette fonction est utilisée par l’API REST (GET /projects).
 func GetProjects() ([]models.Project, error) {
+
 	utils.Logger.Println("[PROJECT][GET] fetching all projects")
+
 	return loadProjects()
 }

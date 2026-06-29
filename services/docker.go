@@ -7,20 +7,36 @@ import (
 	"github.com/moby/moby/client"
 )
 
+// DockerInfo regroupe les informations du Docker Engine.
+//
+// Elle contient la liste des conteneurs et des images
+// récupérées depuis le daemon Docker (local ou distant).
 type DockerInfo struct {
 	Containers client.ContainerListResult
 	Images     client.ImageListResult
 }
 
+// GetDockerInfo retourne un snapshot de l'état actuel du Docker Engine.
+//
+// Elle récupère :
+//   - la liste des conteneurs
+//   - la liste des images
+//
+// Cette fonction est utilisée par la route /docker-info.
 func GetDockerInfo() (*DockerInfo, error) {
+
 	utils.Logger.Println("[DOCKER_INFO] fetching docker info")
 
+	// Initialisation du client Docker depuis l'environnement système
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		utils.Logger.Printf("[ERROR][DOCKER_INFO] docker client init failed: %v", err)
 		return nil, err
 	}
 
+	// -------------------------
+	// LIST CONTAINERS
+	// -------------------------
 	utils.Logger.Println("[DOCKER_INFO] listing containers")
 
 	containers, err := cli.ContainerList(context.Background(), client.ContainerListOptions{})
@@ -31,6 +47,9 @@ func GetDockerInfo() (*DockerInfo, error) {
 
 	utils.Logger.Printf("[DOCKER_INFO] containers found=%d", len(containers.Items))
 
+	// -------------------------
+	// LIST IMAGES
+	// -------------------------
 	utils.Logger.Println("[DOCKER_INFO] listing images")
 
 	images, err := cli.ImageList(context.Background(), client.ImageListOptions{})
@@ -47,9 +66,18 @@ func GetDockerInfo() (*DockerInfo, error) {
 	}, nil
 }
 
+// GetDeploymentStatus retourne l'état d'un conteneur Docker.
+//
+// Elle recherche un conteneur par son nom et retourne son statut :
+//   - running
+//   - exited
+//   - created
+//   - not-found
 func GetDeploymentStatus(name string) (string, error) {
+
 	utils.Logger.Printf("[STATUS] checking container name=%s", name)
 
+	// Client Docker (local ou remote selon env)
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		utils.Logger.Printf("[ERROR][STATUS] docker client init failed: %v", err)
@@ -58,6 +86,7 @@ func GetDeploymentStatus(name string) (string, error) {
 
 	utils.Logger.Println("[STATUS] listing containers (All=true)")
 
+	// Récupération de tous les conteneurs (actifs + arrêtés)
 	result, err := cli.ContainerList(context.Background(), client.ContainerListOptions{
 		All: true,
 	})
@@ -68,7 +97,9 @@ func GetDeploymentStatus(name string) (string, error) {
 
 	utils.Logger.Printf("[STATUS] total containers=%d", len(result.Items))
 
-	// Parcours des containers
+	// -------------------------
+	// SEARCH CONTAINER
+	// -------------------------
 	for _, ctr := range result.Items {
 		for _, n := range ctr.Names {
 			if n == "/"+name {
@@ -79,5 +110,6 @@ func GetDeploymentStatus(name string) (string, error) {
 	}
 
 	utils.Logger.Printf("[STATUS] container not found name=%s", name)
+
 	return "not-found", nil
 }
