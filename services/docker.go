@@ -8,8 +8,12 @@ import (
 	"github.com/docker/docker/client"
 )
 
-// GetDockerInfo retourne les conteneurs et les images Docker
-func GetDockerInfo() (map[string]interface{}, error) {
+type DockerInfo struct {
+	Containers []container.Summary `json:"containers"`
+	Images     []image.Summary     `json:"images"`
+}
+
+func GetDockerInfo() (*DockerInfo, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return nil, err
@@ -25,10 +29,8 @@ func GetDockerInfo() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	info := map[string]interface{}{
-		"containers": containers,
-		"images":     images,
-	}
-
-	return info, nil
+	return &DockerInfo{
+		Containers: containers,
+		Images:     images,
+	}, nil
 }
