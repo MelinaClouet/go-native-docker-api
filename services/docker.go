@@ -3,14 +3,12 @@ package services
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/client"
+	"github.com/moby/moby/client"
 )
 
 type DockerInfo struct {
-	Containers []container.Summary `json:"containers"`
-	Images     []image.Summary     `json:"images"`
+	Containers client.ContainerListResult
+	Images     client.ImageListResult
 }
 
 func GetDockerInfo() (*DockerInfo, error) {
@@ -19,12 +17,12 @@ func GetDockerInfo() (*DockerInfo, error) {
 		return nil, err
 	}
 
-	containers, err := cli.ContainerList(context.Background(), container.ListOptions{})
+	containers, err := cli.ContainerList(context.Background(), client.ContainerListOptions{})
 	if err != nil {
 		return nil, err
 	}
 
-	images, err := cli.ImageList(context.Background(), image.ListOptions{})
+	images, err := cli.ImageList(context.Background(), client.ImageListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -35,22 +33,24 @@ func GetDockerInfo() (*DockerInfo, error) {
 	}, nil
 }
 
-func GetDeploymentStatus(containerName string) (string, error) {
+func GetDeploymentStatus(name string) (string, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return "", err
 	}
 
-	containers, err := cli.ContainerList(context.Background(), container.ListOptions{All: true})
+	result, err := cli.ContainerList(context.Background(), client.ContainerListOptions{
+		All: true,
+	})
 	if err != nil {
 		return "", err
 	}
 
-	for _, c := range containers {
-		for _, name := range c.Names {
-			// Docker met "/" devant les noms
-			if name == "/"+containerName {
-				return c.State, nil // "running", "exited", etc.
+	// Parcours des containers
+	for _, ctr := range result.Items {
+		for _, n := range ctr.Names {
+			if n == "/"+name {
+				return ctr.Status, nil
 			}
 		}
 	}
